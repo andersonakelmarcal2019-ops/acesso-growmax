@@ -268,30 +268,54 @@ const app = {
 
     // Initialization
     init() {
-        this.checkAuth();
-        this.setupEventListeners();
+        try {
+            // Initialize Screens (DOM elements)
+            this.screens = {
+                auth: document.getElementById('auth-screen'),
+                onboarding: document.getElementById('onboarding-screen'),
+                main: document.getElementById('main-app')
+            };
 
-        // Mock default user in storage if empty
-        if (!localStorage.getItem('grow_users')) {
-            try {
-                const defaultUsers = [
-                    { username: 'admin', password: '123', name: 'Administrador', height: 175, weight: 70, age: 25, gender: 'male', goal: 180 }
-                ];
-                localStorage.setItem('grow_users', JSON.stringify(defaultUsers));
-            } catch (e) {
-                console.warn('LocalStorage not available');
+            // Validate critical elements
+            if (!this.screens.auth || !this.screens.onboarding || !this.screens.main) {
+                console.error('Critical DOM elements missing', this.screens);
+                throw new Error('Elementos da interface não encontrados. Recarregue a página.');
+            }
+
+            this.checkAuth();
+            this.setupEventListeners();
+
+            // Mock default user in storage if empty
+            if (!localStorage.getItem('grow_users')) {
+                try {
+                    const defaultUsers = [
+                        { username: 'admin', password: '123', name: 'Administrador', height: 175, weight: 70, age: 25, gender: 'male', goal: 180 }
+                    ];
+                    localStorage.setItem('grow_users', JSON.stringify(defaultUsers));
+                } catch (e) {
+                    console.warn('LocalStorage not available');
+                }
+            }
+        } catch (error) {
+            console.error('App Init Error:', error);
+            // Try to show notification if container exists, otherwise alert
+            const container = document.getElementById('notification-container');
+            if (container) {
+                this.showNotification('Erro fatal ao iniciar: ' + error.message, 'error');
+            } else {
+                alert('Erro fatal: ' + error.message);
             }
         }
     },
 
     // Navigation & Routing
-    screens: {
-        auth: document.getElementById('auth-screen'),
-        onboarding: document.getElementById('onboarding-screen'),
-        main: document.getElementById('main-app')
-    },
+    screens: {}, // Populated in init
 
     switchScreen(screenName) {
+        if (!this.screens[screenName]) {
+            console.error(`Screen ${screenName} not found`);
+            return;
+        }
         Object.values(this.screens).forEach(el => el.classList.remove('active'));
         this.screens[screenName].classList.add('active');
     },
@@ -672,55 +696,78 @@ const app = {
     },
 
     setupEventListeners() {
-        // Login Form
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = document.getElementById('login-user').value;
-            const pass = document.getElementById('login-pass').value;
-            this.login(user, pass);
-        });
-
-        // Register Form
-        document.getElementById('register-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const pass = document.getElementById('reg-pass').value;
-            this.register(name, email, pass);
-        });
-
-        // Onboarding Form
-        document.getElementById('onboarding-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const h = document.getElementById('ob-height').value;
-            const w = document.getElementById('ob-weight').value;
-            const a = document.getElementById('ob-age').value;
-            const g = document.getElementById('ob-gender').value;
-            this.saveOnboarding(h, w, a, g);
-        });
-
-        // Toggle password visibility
-        document.querySelector('.toggle-pass').addEventListener('click', function () {
-            const input = this.previousElementSibling;
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.classList.remove('fa-eye');
-                this.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                this.classList.remove('fa-eye-slash');
-                this.classList.add('fa-eye');
+        try {
+            // Login Form
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const user = document.getElementById('login-user').value;
+                    const pass = document.getElementById('login-pass').value;
+                    this.login(user, pass);
+                });
             }
-        });
 
-        // Auth Navigation Buttons
-        document.getElementById('btn-go-register').addEventListener('click', () => {
-            this.toggleAuthMode('register');
-        });
+            // Register Form
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('reg-name').value;
+                    const email = document.getElementById('reg-email').value;
+                    const pass = document.getElementById('reg-pass').value;
+                    this.register(name, email, pass);
+                });
+            }
 
-        document.getElementById('btn-go-login').addEventListener('click', () => {
-            this.toggleAuthMode('login');
-        });
+            // Onboarding Form
+            const onboardingForm = document.getElementById('onboarding-form');
+            if (onboardingForm) {
+                onboardingForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const h = document.getElementById('ob-height').value;
+                    const w = document.getElementById('ob-weight').value;
+                    const a = document.getElementById('ob-age').value;
+                    const g = document.getElementById('ob-gender').value;
+                    this.saveOnboarding(h, w, a, g);
+                });
+            }
+
+            // Toggle password visibility
+            const toggleBtns = document.querySelectorAll('.toggle-pass');
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const input = this.previousElementSibling;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
+            });
+
+            // Auth Navigation Buttons
+            const btnRegister = document.getElementById('btn-go-register');
+            if (btnRegister) {
+                btnRegister.addEventListener('click', () => {
+                    this.toggleAuthMode('register');
+                });
+            }
+
+            const btnLogin = document.getElementById('btn-go-login');
+            if (btnLogin) {
+                btnLogin.addEventListener('click', () => {
+                    this.toggleAuthMode('login');
+                });
+            }
+        } catch (error) {
+            console.error('Setup Event Listeners Error:', error);
+            this.showNotification('Erro interno ao inicializar eventos: ' + error.message, 'error');
+        }
     },
 
     openWorkoutModal(workoutId) {
