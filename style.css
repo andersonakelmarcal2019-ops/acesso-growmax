@@ -409,6 +409,11 @@ label {
     padding: 20px;
     padding-bottom: 100px;
     /* Space for nav */
+    min-height: 0;
+    /* Important for flex child scroll */
+    width: 100%;
+    display: block;
+    /* Ensure it's not hidden */
 }
 
 /* Dashboard Specifics */

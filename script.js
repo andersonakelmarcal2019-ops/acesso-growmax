@@ -683,13 +683,18 @@ const app = {
 
     setupEventListeners() {
         try {
-            // Login Form
-            const loginForm = document.getElementById('login-form');
-            if (loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
+            // Login Action
+            const btnLoginAction = document.getElementById('btn-login-action');
+            if (btnLoginAction) {
+                btnLoginAction.addEventListener('click', (e) => {
+                    e.preventDefault(); // Just in case
                     const user = document.getElementById('login-user').value;
                     const pass = document.getElementById('login-pass').value;
+
+                    if (!user) {
+                        this.showNotification('Por favor, digite um email.', 'error');
+                        return;
+                    }
                     this.login(user, pass);
                 });
             }
