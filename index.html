@@ -29,57 +29,7 @@
 
 
 
-        <!-- SCREEN: ONBOARDING -->
-        <section id="onboarding-screen" class="screen active">
-            <div class="onboarding-content">
-                <div class="header-simple">
-                    <h2>Vamos configurar seu perfil</h2>
-                    <p>Precisamos de alguns dados para personalizar seu crescimento.</p>
-                </div>
 
-                <form id="onboarding-form">
-                    <div class="input-group">
-                        <label>Qual sua altura atual? (cm)</label>
-                        <div class="input-wrapper highlight">
-                            <input type="number" id="ob-height" placeholder="Ex: 175" required>
-                            <span class="unit">cm</span>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Qual seu peso? (kg)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="ob-weight" placeholder="Ex: 70" required>
-                            <span class="unit">kg</span>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Qual sua idade?</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="ob-age" placeholder="Ex: 20" required>
-                            <span class="unit">anos</span>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Gênero</label>
-                        <div class="select-wrapper">
-                            <select id="ob-gender" required>
-                                <option value="" disabled selected>Selecione</option>
-                                <option value="male">Masculino</option>
-                                <option value="female">Feminino</option>
-                                <option value="other">Outro</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down"></i>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-primary" onclick="app.manualSubmit()">Continuar <i
-                            class="fa-solid fa-arrow-right"></i></button>
-                </form>
-            </div>
-        </section>
 
         <!-- SCREEN: MAIN APP -->
         <section id="main-app" class="screen">

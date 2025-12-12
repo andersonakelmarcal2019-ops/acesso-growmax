@@ -271,7 +271,6 @@ const app = {
         try {
             // Initialize Screens (DOM elements)
             this.screens = {
-                onboarding: document.getElementById('onboarding-screen'),
                 main: document.getElementById('main-app')
             };
 
@@ -283,15 +282,22 @@ const app = {
 
             this.setupEventListeners();
 
-            // Check Storage
+            // Always start app directly with default/stored user
             const storedUser = localStorage.getItem('grow_user_data');
             if (storedUser) {
                 this.state.currentUser = JSON.parse(storedUser);
-                this.startApp();
             } else {
-                // If no user, show Onboarding
-                this.switchScreen('onboarding');
+                // Default user if none exists
+                this.state.currentUser = {
+                    name: 'Aluno',
+                    height: 175,
+                    weight: 70,
+                    age: 25,
+                    gender: 'male',
+                    goal: 180
+                };
             }
+            this.startApp();
 
         } catch (error) {
             console.error('App Init Error:', error);
@@ -519,9 +525,9 @@ const app = {
         const progressPercent = 3; // Mocked
         const dailyPercent = (this.state.tasks.filter(t => t.done).length / this.state.tasks.length) * 100;
 
-        // Calculate water: weight * 50ml
-        const waterLiters = (user.weight * 50) / 1000;
-        const waterTaskText = `Beber ${waterLiters.toFixed(1).replace('.', ',')} litros de água`;
+        // Fixed water goal: 3.5 Liters
+        const waterLiters = 3.5;
+        const waterTaskText = `Beber ${waterLiters.toString().replace('.', ',')} litros de água`;
 
         // Update task text dynamically (assuming first task is always water)
         const tasksToRender = this.state.tasks.map((task, index) => {
@@ -539,20 +545,6 @@ const app = {
         `).join('');
 
         return `
-            <div class="card">
-                <h3>Atualização de Altura</h3>
-                <div class="stats-header" style="justify-content: space-around;">
-                    <div class="stat-item">
-                        <div class="label">Inicial</div>
-                        <div class="value">${user.height}cm</div>
-                    </div>
-                    <div class="stat-item highlight">
-                        <div class="label">Meta</div>
-                        <div class="value">${user.goal}cm</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <h3 class="text-red">Nível 1: Fundação</h3>
