@@ -271,39 +271,32 @@ const app = {
         try {
             // Initialize Screens (DOM elements)
             this.screens = {
-                auth: document.getElementById('auth-screen'),
                 onboarding: document.getElementById('onboarding-screen'),
                 main: document.getElementById('main-app')
             };
 
             // Validate critical elements
-            if (!this.screens.auth || !this.screens.onboarding || !this.screens.main) {
+            if (!this.screens.onboarding || !this.screens.main) {
                 console.error('Critical DOM elements missing', this.screens);
-                throw new Error('Elementos da interface não encontrados. Recarregue a página.');
+                return;
             }
 
-            this.checkAuth();
             this.setupEventListeners();
 
-            // Mock default user in storage if empty
-            if (!localStorage.getItem('grow_users')) {
-                try {
-                    const defaultUsers = [
-                        { username: 'admin', password: '123', name: 'Administrador', height: 175, weight: 70, age: 25, gender: 'male', goal: 180 }
-                    ];
-                    localStorage.setItem('grow_users', JSON.stringify(defaultUsers));
-                } catch (e) {
-                    console.warn('LocalStorage not available');
-                }
+            // Load user from storage
+            const storedUser = localStorage.getItem('grow_user_data');
+            if (storedUser) {
+                this.state.currentUser = JSON.parse(storedUser);
+                this.startApp();
+            } else {
+                this.switchScreen('onboarding');
             }
+
         } catch (error) {
             console.error('App Init Error:', error);
-            // Try to show notification if container exists, otherwise alert
             const container = document.getElementById('notification-container');
             if (container) {
-                this.showNotification('Erro fatal ao iniciar: ' + error.message, 'error');
-            } else {
-                alert('Erro fatal: ' + error.message);
+                this.showNotification('Erro ao iniciar: ' + error.message, 'error');
             }
         }
     },
@@ -420,18 +413,40 @@ const app = {
 
     // register() function removed as it is now auto-handled in login
 
-    saveOnboarding(height, weight, age, gender) {
-        if (this.state.currentUser) {
-            this.state.currentUser.height = height;
-            this.state.currentUser.weight = weight;
-            this.state.currentUser.age = age;
-            this.state.currentUser.gender = gender;
-            // Default goal: +5cm if not specified (since we removed the input)
-            this.state.currentUser.goal = parseInt(height) + 5;
+    manualSubmit() {
+        const h = document.getElementById('ob-height').value;
+        const w = document.getElementById('ob-weight').value;
+        const a = document.getElementById('ob-age').value;
+        const g = document.getElementById('ob-gender').value;
 
-            this.updateUserInStorage(this.state.currentUser);
-            this.showNotification('Perfil atualizado!', 'success');
-            this.startApp();
+        if (!h || !w || !a || !g || g === "") {
+            this.showNotification('Por favor, preencha todos os campos corretamente.', 'error');
+            return;
+        }
+        this.saveOnboarding(h, w, a, g);
+    },
+
+    saveOnboarding(height, weight, age, gender) {
+        const newUser = {
+            name: 'Aluno',
+            height: height,
+            weight: weight,
+            age: age,
+            gender: gender,
+            goal: parseInt(height) + 5
+        };
+
+        this.state.currentUser = newUser;
+        localStorage.setItem('grow_user_data', JSON.stringify(newUser));
+
+        this.showNotification('Perfil configurado!', 'success');
+        this.startApp();
+    },
+
+    resetData() {
+        if (confirm('Tem certeza que deseja redefinir seus dados?')) {
+            localStorage.removeItem('grow_user_data');
+            location.reload();
         }
     },
 
@@ -658,7 +673,7 @@ const app = {
                     <p><strong>Altura Atual:</strong> ${user.height} cm</p>
                     <p><strong>Meta:</strong> ${user.goal} cm</p>
                 </div>
-                <button class="btn-primary" style="margin-top:20px; background-color: #333;" onclick="location.reload()">Sair</button>
+                <button class="btn-primary" style="margin-top:20px; background-color: #333;" onclick="app.resetData()">Redefinir Dados</button>
             </div>
         `;
     },
@@ -683,21 +698,7 @@ const app = {
 
     setupEventListeners() {
         try {
-            // Login Action
-            const btnLoginAction = document.getElementById('btn-login-action');
-            if (btnLoginAction) {
-                btnLoginAction.addEventListener('click', (e) => {
-                    e.preventDefault(); // Just in case
-                    const user = document.getElementById('login-user').value;
-                    const pass = document.getElementById('login-pass').value;
-
-                    if (!user) {
-                        this.showNotification('Por favor, digite um email.', 'error');
-                        return;
-                    }
-                    this.login(user, pass);
-                });
-            }
+            // Login Action removed
 
             // Register Form Listener Removed
 

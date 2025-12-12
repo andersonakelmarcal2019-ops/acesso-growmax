@@ -27,52 +27,8 @@
     <!-- MAIN CONTAINER -->
     <div class="app-container">
 
-        <!-- SCREEN: AUTH (LOGIN & REGISTER) -->
-        <section id="auth-screen" class="screen active">
-            <div class="auth-content">
-                <div class="logo-area">
-                    <img src="https://digitalcurso.space/wp-content/uploads/2025/12/logo-sem-o-nome-removebg-preview.png"
-                        alt="Grow Max Logo" class="logo-img">
-                    <h1>Grow Max</h1>
-                    <p class="subtitle">Entre com suas credenciais</p>
-                </div>
-
-                <!-- Login Form Container -->
-                <div id="login-container" class="auth-form">
-                    <div class="input-group">
-                        <label>Email de Acesso</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-envelope"></i>
-                            <input type="email" id="login-user" placeholder="seu@email.com" required>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Senha</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="login-pass" placeholder="Qualquer senha (DEV)" required>
-                            <i class="fa-regular fa-eye toggle-pass"></i>
-                        </div>
-                    </div>
-
-                    <button id="btn-login-action" class="btn-primary" type="button">Entrar no App</button>
-
-                    <p class="helper-text" style="font-size: 0.8rem; margin-top: 20px; color: #888;">
-                        <i class="fa-solid fa-circle-info"></i> Acesso liberado para testes.
-                    </p>
-                </div>
-
-                <!-- Hidden Register elements removed -->
-
-                <div class="footer-cred">
-                    Grow Max &copy; 2025
-                </div>
-            </div>
-        </section>
-
         <!-- SCREEN: ONBOARDING -->
-        <section id="onboarding-screen" class="screen">
+        <section id="onboarding-screen" class="screen active">
             <div class="onboarding-content">
                 <div class="header-simple">
                     <h2>Vamos configurar seu perfil</h2>
@@ -117,7 +73,8 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+                    <button type="button" class="btn-primary" onclick="app.manualSubmit()">Continuar <i
+                            class="fa-solid fa-arrow-right"></i></button>
                 </form>
             </div>
         </section>
