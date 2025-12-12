@@ -372,11 +372,8 @@ const app = {
     },
 
     login(username, password) {
-        // FIXED PASSWORD CHECK - WEBOOK SIMULATION
-        if (password !== 'aluno968') {
-            this.showNotification('Senha incorreta! Verifique seu email de boas vindas.', 'error');
-            return;
-        }
+        // DEV MODE: ANY PASSWORD ACCEPTED
+        // if (password !== 'aluno968') ...
 
         const users = this.getUsers();
         // Match by email
