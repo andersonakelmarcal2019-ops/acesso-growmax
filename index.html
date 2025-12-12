@@ -1,79 +1,214 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Grow Max</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #000000;
-        color: #ffffff;
-      }
-      
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #000000; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #333; 
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #ef4444; 
-      }
 
-      /* Animations */
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
-      @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-out forwards;
-      }
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-      .animate-slide-up {
-        animation: slideUp 0.5s ease-out forwards;
-      }
-
-      /* Hide scrollbar utility */
-      .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-      }
-      .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://esm.sh/@google/genai@^1.32.0",
-    "react-markdown": "https://esm.sh/react-markdown@^10.1.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.1/",
-    "react/": "https://esm.sh/react@^19.2.1/",
-    "react": "https://esm.sh/react@^19.2.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.559.0",
-    "jspdf": "https://esm.sh/jspdf@2.5.1"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
-  <body>
-    <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+
+<body>
+
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="app-container">
+
+        <!-- SCREEN: AUTH (LOGIN & REGISTER) -->
+        <section id="auth-screen" class="screen active">
+            <div class="auth-content">
+                <div class="logo-area">
+                    <img src="https://digitalcurso.space/wp-content/uploads/2025/12/logo-sem-o-nome-removebg-preview.png"
+                        alt="Grow Max Logo" class="logo-img">
+                    <h1>Grow Max</h1>
+                    <p class="subtitle">Entre com suas credenciais</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <label>Usuário</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="login-user" placeholder="Digite seu usuário" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-pass" placeholder="Digite sua senha" required>
+                            <i class="fa-regular fa-eye toggle-pass"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Entrar</button>
+
+                    <p class="helper-text">Não tem uma conta? <span class="link"
+                            onclick="app.toggleAuthMode('register')">Cadastre-se</span></p>
+                </form>
+
+                <!-- Register Form (Hidden by default) -->
+                <form id="register-form" class="auth-form hidden">
+                    <div class="input-group">
+                        <label>Nome Completo</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" id="reg-name" placeholder="Seu nome" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Email</label>
+                        <div class="input-wrapper">
+                            <i class="fa-regular fa-envelope"></i>
+                            <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Senha</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="reg-pass" placeholder="Crie uma senha" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Criar Conta</button>
+
+                    <p class="helper-text">Já tem conta? <span class="link" onclick="app.toggleAuthMode('login')">Fazer
+                            Login</span></p>
+                </form>
+
+                <div class="footer-cred">
+                    Credenciais fornecidas pelo administrador
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN: ONBOARDING -->
+        <section id="onboarding-screen" class="screen">
+            <div class="onboarding-content">
+                <div class="header-simple">
+                    <h2>Vamos configurar seu perfil</h2>
+                    <p>Precisamos de alguns dados para personalizar seu crescimento.</p>
+                </div>
+
+                <form id="onboarding-form">
+                    <div class="input-group">
+                        <label>Qual sua altura atual? (cm)</label>
+                        <div class="input-wrapper highlight">
+                            <input type="number" id="ob-height" placeholder="Ex: 175" required>
+                            <span class="unit">cm</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Qual seu peso? (kg)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="ob-weight" placeholder="Ex: 70" required>
+                            <span class="unit">kg</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Qual sua idade?</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="ob-age" placeholder="Ex: 20" required>
+                            <span class="unit">anos</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Gênero</label>
+                        <div class="select-wrapper">
+                            <select id="ob-gender" required>
+                                <option value="" disabled selected>Selecione</option>
+                                <option value="male">Masculino</option>
+                                <option value="female">Feminino</option>
+                                <option value="other">Outro</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Continuar <i class="fa-solid fa-arrow-right"></i></button>
+                </form>
+            </div>
+        </section>
+
+        <!-- SCREEN: MAIN APP -->
+        <section id="main-app" class="screen">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="user-info">
+                    <div class="avatar-circle">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div>
+                        <span class="greeting">Olá, <span id="user-name-display">Usuário</span></span>
+                        <span class="status-badge">Nível 1</span>
+                    </div>
+                </div>
+                <button class="btn-icon"><i class="fa-regular fa-bell"></i></button>
+            </header>
+
+            <!-- Scrollable Content -->
+            <main id="content-area" class="content-area">
+                <!-- Content injected via JS -->
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="app.navigate('dashboard')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Início</span>
+                </button>
+                <button class="nav-item" onclick="app.navigate('workouts')">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Treinos</span>
+                </button>
+                <button class="nav-item" onclick="app.navigate('diet')">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span>Dieta</span>
+                </button>
+                <button class="nav-item" onclick="app.navigate('profile')">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Perfil</span>
+                </button>
+            </nav>
+        </section>
+
+        <!-- SCREEN: MODAL WORKOUT -->
+        <div id="workout-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Treino</h3>
+                    <button class="modal-close" onclick="app.closeModal()"><i class="fa-solid fa-times"></i></button>
+                </div>
+                <div id="modal-body" class="modal-body">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
