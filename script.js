@@ -276,19 +276,20 @@ const app = {
             };
 
             // Validate critical elements
-            if (!this.screens.onboarding || !this.screens.main) {
+            if (!this.screens.main) {
                 console.error('Critical DOM elements missing', this.screens);
                 return;
             }
 
             this.setupEventListeners();
 
-            // Load user from storage
+            // Check Storage
             const storedUser = localStorage.getItem('grow_user_data');
             if (storedUser) {
                 this.state.currentUser = JSON.parse(storedUser);
                 this.startApp();
             } else {
+                // If no user, show Onboarding
                 this.switchScreen('onboarding');
             }
 
@@ -298,6 +299,47 @@ const app = {
             if (container) {
                 this.showNotification('Erro ao iniciar: ' + error.message, 'error');
             }
+        }
+    },
+
+    manualSubmit() {
+        console.log('Manual Submit Clicked');
+        const h = document.getElementById('ob-height').value;
+        const w = document.getElementById('ob-weight').value;
+        const a = document.getElementById('ob-age').value;
+        const g = document.getElementById('ob-gender').value;
+
+        console.log('Values:', { h, w, a, g });
+
+        if (!h || !w || !a || !g || g === "") {
+            this.showNotification('Por favor, preencha todos os campos.', 'error');
+            return;
+        }
+
+        this.saveOnboarding(h, w, a, g);
+    },
+
+    saveOnboarding(height, weight, age, gender) {
+        try {
+            const newUser = {
+                name: 'Aluno',
+                height: height,
+                weight: weight,
+                age: age,
+                gender: gender,
+                goal: parseInt(height) + 5
+            };
+
+            this.state.currentUser = newUser;
+            localStorage.setItem('grow_user_data', JSON.stringify(newUser));
+
+            this.showNotification('Perfil configurado!', 'success');
+            setTimeout(() => {
+                this.startApp();
+            }, 500); // Small delay for visual feedback
+        } catch (error) {
+            console.error('Save Error:', error);
+            this.showNotification('Erro ao salvar dados: ' + error.message, 'error');
         }
     },
 
@@ -413,35 +455,9 @@ const app = {
 
     // register() function removed as it is now auto-handled in login
 
-    manualSubmit() {
-        const h = document.getElementById('ob-height').value;
-        const w = document.getElementById('ob-weight').value;
-        const a = document.getElementById('ob-age').value;
-        const g = document.getElementById('ob-gender').value;
 
-        if (!h || !w || !a || !g || g === "") {
-            this.showNotification('Por favor, preencha todos os campos corretamente.', 'error');
-            return;
-        }
-        this.saveOnboarding(h, w, a, g);
-    },
 
-    saveOnboarding(height, weight, age, gender) {
-        const newUser = {
-            name: 'Aluno',
-            height: height,
-            weight: weight,
-            age: age,
-            gender: gender,
-            goal: parseInt(height) + 5
-        };
 
-        this.state.currentUser = newUser;
-        localStorage.setItem('grow_user_data', JSON.stringify(newUser));
-
-        this.showNotification('Perfil configurado!', 'success');
-        this.startApp();
-    },
 
     resetData() {
         if (confirm('Tem certeza que deseja redefinir seus dados?')) {
@@ -715,6 +731,19 @@ const app = {
                 });
             }
 
+            // Setup Form
+            const setupForm = document.getElementById('setup-form');
+            if (setupForm) {
+                setupForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const h = document.getElementById('setup-height').value;
+                    const w = document.getElementById('setup-weight').value;
+                    if (h && w) {
+                        this.saveSetupData(h, w);
+                    }
+                });
+            }
+
             // Toggle password visibility
             const toggleBtns = document.querySelectorAll('.toggle-pass');
             toggleBtns.forEach(btn => {
@@ -786,6 +815,8 @@ const app = {
 };
 
 // Start
+// Start
+window.app = app; // Ensure global access for HTML onclick handlers
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
 });
