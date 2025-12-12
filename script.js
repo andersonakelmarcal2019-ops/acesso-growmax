@@ -273,10 +273,14 @@ const app = {
 
         // Mock default user in storage if empty
         if (!localStorage.getItem('grow_users')) {
-            const defaultUsers = [
-                { username: 'admin', password: '123', name: 'Administrador', height: 175, weight: 70, age: 25, gender: 'male', goal: 180 }
-            ];
-            localStorage.setItem('grow_users', JSON.stringify(defaultUsers));
+            try {
+                const defaultUsers = [
+                    { username: 'admin', password: '123', name: 'Administrador', height: 175, weight: 70, age: 25, gender: 'male', goal: 180 }
+                ];
+                localStorage.setItem('grow_users', JSON.stringify(defaultUsers));
+            } catch (e) {
+                console.warn('LocalStorage not available');
+            }
         }
     },
 
@@ -306,6 +310,10 @@ const app = {
 
     // Auth Logic
     toggleAuthMode(mode) {
+        // Clear forms
+        document.getElementById('login-form').reset();
+        document.getElementById('register-form').reset();
+
         if (mode === 'register') {
             document.getElementById('login-form').classList.add('hidden');
             document.getElementById('register-form').classList.remove('hidden');
@@ -315,12 +323,48 @@ const app = {
         }
     },
 
+    showNotification(message, type = 'info') {
+        const container = document.getElementById('notification-container');
+        const notif = document.createElement('div');
+        notif.className = `notification ${type}`;
+
+        let icon = 'fa-circle-info';
+        if (type === 'success') icon = 'fa-circle-check';
+        if (type === 'error') icon = 'fa-circle-exclamation';
+
+        notif.innerHTML = `
+            <i class="fa-solid ${icon}"></i>
+            <span>${message}</span>
+        `;
+
+        container.appendChild(notif);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notif.style.animation = 'fadeOut 0.3s forwards';
+            setTimeout(() => {
+                notif.remove();
+            }, 300);
+        }, 3000);
+    },
+
+    getUsers() {
+        try {
+            return JSON.parse(localStorage.getItem('grow_users') || '[]');
+        } catch (e) {
+            console.error('Error parsing users:', e);
+            return [];
+        }
+    },
+
     login(username, password) {
-        const users = JSON.parse(localStorage.getItem('grow_users') || '[]');
-        const user = users.find(u => u.username === username && u.password === password);
+        const users = this.getUsers();
+        // Match by email (stored as username)
+        const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
 
         if (user) {
             this.state.currentUser = user;
+            this.showNotification('Login realizado com sucesso!', 'success');
 
             // Check if profile is complete
             if (!user.height || !user.age) {
@@ -329,20 +373,20 @@ const app = {
                 this.startApp();
             }
         } else {
-            alert('Usuário ou senha incorretos!');
+            this.showNotification('Email ou senha incorretos!', 'error');
         }
     },
 
     register(name, email, password) {
-        const users = JSON.parse(localStorage.getItem('grow_users') || '[]');
+        const users = this.getUsers();
 
-        if (users.find(u => u.username === email)) {
-            alert('Este email já está cadastrado!');
+        if (users.find(u => u.username.toLowerCase() === email.toLowerCase())) {
+            this.showNotification('Este email já está cadastrado!', 'error');
             return;
         }
 
         const newUser = {
-            username: email, // simple username mechanism
+            username: email,
             password: password,
             name: name,
             height: null,
@@ -353,11 +397,17 @@ const app = {
         };
 
         users.push(newUser);
-        localStorage.setItem('grow_users', JSON.stringify(users));
+        try {
+            localStorage.setItem('grow_users', JSON.stringify(users));
+            this.state.currentUser = newUser;
+            this.showNotification('Conta criada com sucesso!', 'success');
 
-        // Auto login
-        this.state.currentUser = newUser;
-        this.switchScreen('onboarding');
+            setTimeout(() => {
+                this.switchScreen('onboarding');
+            }, 1000);
+        } catch (e) {
+            this.showNotification('Erro ao salvar dados. Tente novamente.', 'error');
+        }
     },
 
     saveOnboarding(height, weight, age, gender) {
@@ -370,16 +420,21 @@ const app = {
             this.state.currentUser.goal = parseInt(height) + 5;
 
             this.updateUserInStorage(this.state.currentUser);
+            this.showNotification('Perfil atualizado!', 'success');
             this.startApp();
         }
     },
 
     updateUserInStorage(userToUpdate) {
-        const users = JSON.parse(localStorage.getItem('grow_users') || '[]');
+        const users = this.getUsers();
         const index = users.findIndex(u => u.username === userToUpdate.username);
         if (index !== -1) {
             users[index] = userToUpdate;
-            localStorage.setItem('grow_users', JSON.stringify(users));
+            try {
+                localStorage.setItem('grow_users', JSON.stringify(users));
+            } catch (e) {
+                console.error('Error saving user:', e);
+            }
         }
     },
 
@@ -656,6 +711,15 @@ const app = {
                 this.classList.remove('fa-eye-slash');
                 this.classList.add('fa-eye');
             }
+        });
+
+        // Auth Navigation Buttons
+        document.getElementById('btn-go-register').addEventListener('click', () => {
+            this.toggleAuthMode('register');
+        });
+
+        document.getElementById('btn-go-login').addEventListener('click', () => {
+            this.toggleAuthMode('login');
         });
     },
 

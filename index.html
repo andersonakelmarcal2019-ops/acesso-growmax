@@ -40,10 +40,10 @@
                 <!-- Login Form -->
                 <form id="login-form" class="auth-form">
                     <div class="input-group">
-                        <label>Usuário</label>
+                        <label>Email</label>
                         <div class="input-wrapper">
-                            <i class="fa-regular fa-user"></i>
-                            <input type="text" id="login-user" placeholder="Digite seu usuário" required>
+                            <i class="fa-regular fa-envelope"></i>
+                            <input type="email" id="login-user" placeholder="Digite seu email" required>
                         </div>
                     </div>
 
@@ -58,8 +58,8 @@
 
                     <button type="submit" class="btn-primary">Entrar</button>
 
-                    <p class="helper-text">Não tem uma conta? <span class="link"
-                            onclick="app.toggleAuthMode('register')">Cadastre-se</span></p>
+                    <p class="helper-text">Não tem uma conta? <span class="link" id="btn-go-register">Cadastre-se</span>
+                    </p>
                 </form>
 
                 <!-- Register Form (Hidden by default) -->
@@ -90,7 +90,7 @@
 
                     <button type="submit" class="btn-primary">Criar Conta</button>
 
-                    <p class="helper-text">Já tem conta? <span class="link" onclick="app.toggleAuthMode('login')">Fazer
+                    <p class="helper-text">Já tem conta? <span class="link" id="btn-go-login">Fazer
                             Login</span></p>
                 </form>
 
