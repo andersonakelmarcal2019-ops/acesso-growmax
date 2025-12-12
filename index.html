@@ -40,62 +40,33 @@
                 <!-- Login Form -->
                 <form id="login-form" class="auth-form">
                     <div class="input-group">
-                        <label>Email</label>
+                        <label>Email de Compra</label>
                         <div class="input-wrapper">
                             <i class="fa-regular fa-envelope"></i>
-                            <input type="email" id="login-user" placeholder="Digite seu email" required>
+                            <input type="email" id="login-user" placeholder="seu@email.com" required>
                         </div>
                     </div>
 
                     <div class="input-group">
-                        <label>Senha</label>
+                        <label>Senha de Acesso</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="login-pass" placeholder="Digite sua senha" required>
+                            <input type="password" id="login-pass" placeholder="Digite a senha padrão" required>
                             <i class="fa-regular fa-eye toggle-pass"></i>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary">Entrar</button>
+                    <button type="submit" class="btn-primary">Acessar Plataforma</button>
 
-                    <p class="helper-text">Não tem uma conta? <span class="link" id="btn-go-register">Cadastre-se</span>
+                    <p class="helper-text" style="font-size: 0.8rem; margin-top: 20px; color: #888;">
+                        <i class="fa-solid fa-circle-info"></i> Utilize o email cadastrado na compra e a senha enviada.
                     </p>
                 </form>
 
-                <!-- Register Form (Hidden by default) -->
-                <form id="register-form" class="auth-form hidden">
-                    <div class="input-group">
-                        <label>Nome Completo</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-user"></i>
-                            <input type="text" id="reg-name" placeholder="Seu nome" required>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Email</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-envelope"></i>
-                            <input type="email" id="reg-email" placeholder="seu@email.com" required>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Senha</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="reg-pass" placeholder="Crie uma senha" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary">Criar Conta</button>
-
-                    <p class="helper-text">Já tem conta? <span class="link" id="btn-go-login">Fazer
-                            Login</span></p>
-                </form>
+                <!-- Hidden Register elements removed -->
 
                 <div class="footer-cred">
-                    Credenciais fornecidas pelo administrador
+                    Grow Max &copy; 2025
                 </div>
             </div>
         </section>

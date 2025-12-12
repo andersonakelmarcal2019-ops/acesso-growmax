@@ -333,22 +333,12 @@ const app = {
     },
 
     // Auth Logic
-    toggleAuthMode(mode) {
-        // Clear forms
-        document.getElementById('login-form').reset();
-        document.getElementById('register-form').reset();
-
-        if (mode === 'register') {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('register-form').classList.remove('hidden');
-        } else {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-        }
-    },
+    // toggleAuthMode Removed as we only have login now
 
     showNotification(message, type = 'info') {
         const container = document.getElementById('notification-container');
+        if (!container) return; // Guard clause
+
         const notif = document.createElement('div');
         notif.className = `notification ${type}`;
 
@@ -382,57 +372,56 @@ const app = {
     },
 
     login(username, password) {
-        const users = this.getUsers();
-        // Match by email (stored as username)
-        const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
-
-        if (user) {
-            this.state.currentUser = user;
-            this.showNotification('Login realizado com sucesso!', 'success');
-
-            // Check if profile is complete
-            if (!user.height || !user.age) {
-                this.switchScreen('onboarding');
-            } else {
-                this.startApp();
-            }
-        } else {
-            this.showNotification('Email ou senha incorretos!', 'error');
-        }
-    },
-
-    register(name, email, password) {
-        const users = this.getUsers();
-
-        if (users.find(u => u.username.toLowerCase() === email.toLowerCase())) {
-            this.showNotification('Este email já está cadastrado!', 'error');
+        // FIXED PASSWORD CHECK - WEBOOK SIMULATION
+        if (password !== 'aluno968') {
+            this.showNotification('Senha incorreta! Verifique seu email de boas vindas.', 'error');
             return;
         }
 
-        const newUser = {
-            username: email,
-            password: password,
-            name: name,
-            height: null,
-            weight: null,
-            age: null,
-            gender: null,
-            goal: null
-        };
+        const users = this.getUsers();
+        // Match by email
+        let user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
 
-        users.push(newUser);
-        try {
-            localStorage.setItem('grow_users', JSON.stringify(users));
-            this.state.currentUser = newUser;
-            this.showNotification('Conta criada com sucesso!', 'success');
+        if (user) {
+            // User exists, just login
+            this.state.currentUser = user;
+            this.showNotification('Bem-vindo de volta! Acesso liberado.', 'success');
 
-            setTimeout(() => {
-                this.switchScreen('onboarding');
-            }, 1000);
-        } catch (e) {
-            this.showNotification('Erro ao salvar dados. Tente novamente.', 'error');
+            // Check if profile is complete
+            if (!user.height || !user.age) {
+                setTimeout(() => this.switchScreen('onboarding'), 1000);
+            } else {
+                setTimeout(() => this.startApp(), 1000);
+            }
+        } else {
+            // First time access with correct password -> Auto Register
+            const newUser = {
+                username: username, // email
+                password: password, // not really used but kept for structure
+                name: username.split('@')[0], // Default name from email
+                height: null,
+                weight: null,
+                age: null,
+                gender: null,
+                goal: null
+            };
+
+            users.push(newUser);
+            try {
+                localStorage.setItem('grow_users', JSON.stringify(users));
+                this.state.currentUser = newUser;
+                this.showNotification('Primeiro acesso detectado. Configurando perfil...', 'success');
+
+                setTimeout(() => {
+                    this.switchScreen('onboarding');
+                }, 1500);
+            } catch (e) {
+                this.showNotification('Erro de armazenamento. Tente limpar o cache.', 'error');
+            }
         }
     },
+
+    // register() function removed as it is now auto-handled in login
 
     saveOnboarding(height, weight, age, gender) {
         if (this.state.currentUser) {
@@ -708,17 +697,7 @@ const app = {
                 });
             }
 
-            // Register Form
-            const registerForm = document.getElementById('register-form');
-            if (registerForm) {
-                registerForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const name = document.getElementById('reg-name').value;
-                    const email = document.getElementById('reg-email').value;
-                    const pass = document.getElementById('reg-pass').value;
-                    this.register(name, email, pass);
-                });
-            }
+            // Register Form Listener Removed
 
             // Onboarding Form
             const onboardingForm = document.getElementById('onboarding-form');
@@ -750,20 +729,7 @@ const app = {
                 });
             });
 
-            // Auth Navigation Buttons
-            const btnRegister = document.getElementById('btn-go-register');
-            if (btnRegister) {
-                btnRegister.addEventListener('click', () => {
-                    this.toggleAuthMode('register');
-                });
-            }
-
-            const btnLogin = document.getElementById('btn-go-login');
-            if (btnLogin) {
-                btnLogin.addEventListener('click', () => {
-                    this.toggleAuthMode('login');
-                });
-            }
+            // Auth Navigation Buttons Removed - No more manual register
         } catch (error) {
             console.error('Setup Event Listeners Error:', error);
             this.showNotification('Erro interno ao inicializar eventos: ' + error.message, 'error');
