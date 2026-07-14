@@ -43,7 +43,7 @@ const AIAssistant: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] animate-fade-in">
+    <div className="flex flex-col h-[calc(100vh-140px)] pb-20 animate-fade-in">
       <div className="mb-4 text-center">
          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-900/20 border border-red-900/50 mb-2">
            <Sparkles size={14} className="text-red-500" />
